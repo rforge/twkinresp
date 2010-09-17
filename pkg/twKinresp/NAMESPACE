@@ -1,0 +1,15 @@
+import(nlme)			#fixef
+
+exportPattern("^[^\\.]")	#exports all variables that do not start with a period.
+
+S3method(coefKinresp,default)
+S3method(coefKinresp,kinrespList)
+S3method(getUnlimitedGrowthData,default)
+S3method(getUnlimitedGrowthData,kinresp)
+S3method(getUnlimitedGrowthData,kinrespList)
+S3method(kinrespParDist,gnls)
+S3method(kinrespParDist,nlme)
+S3method(plotKinrespDiagnostics,default)
+S3method(plotKinrespDiagnostics,kinresp)
+S3method(plotKinrespDiagnostics,kinrespList)
+
