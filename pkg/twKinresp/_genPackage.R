@@ -25,7 +25,7 @@ library(twMisc)
 
 tmp.f <- function(){
 	library(inlinedocs)
-	unlink("man",recursive=TRUE)
+	unlink( file.path("man","*.Rd") )	
 	package.skeleton.dx(".")
 }
 
