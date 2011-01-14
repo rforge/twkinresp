@@ -67,16 +67,37 @@ kinrespGrowthphaseExperiment <- function(
 	### list with components \describe{
 	### \item{n}{data.frame with columns [suite, experiment, replicate], their combination named "ser" and entry n from result of \code{\link{kinrespGrowthphaseReplicate}} for each replicate}
 	### \item{resRep}{list of results of \code{\link{kinrespGrowthphaseReplicate}} for each replicate}
-	### \item{errors}{error messages for replicates where fit failed.}
+	### \item{errors}{list of error messages for replicates where fit failed.}
 	### }
 }
 #mtrace(kinrespGrowthphaseExperiment)
+
+combineKinrespLists <- function( 
+	### Combine several kinrespList to one bigger kinrespList.
+	x		##<< List of kinrespList entries
+){
+	if( 0==length(x)) return( NULL )
+	if( !is.list(x) ) {warning("combineKinrespLists argument must be a list of kinrespList entries, Returning NULL"); return(NULL) }
+	if( !is(x[[1]],"kinrespList") ) {warning("combineKinrespLists argument must be a list of kinrespList entries, Returning NULL"); return(NULL) }
+	# need to remove the names on lapply, else the indices will prefix the names of the entries
+	res <- list(
+		n = do.call( rbind, lapply(x,"[[","n") )
+		,resRep = tmp <- do.call( c,  {tmp<-lapply(x,"[[","resRep");names(tmp)<-NULL;tmp} )
+		,errors = do.call( c,  {tmp<-lapply(x,"[[","errors");names(tmp)<-NULL;tmp} )
+		)
+	rownames(res$n) <- NULL
+	class(res) <- "kinrespList"
+	res
+}
 
 setMethodS3("getUnlimitedGrowthData","default", function( 
 	### Extract the dataset with records of unlimited growth phase.
 	kinrespRes
 	,...
 ){
+	##seealso<< 
+	## \code{\link{getUnlimitedGrowthData.kinresp}}
+	## \code{\link{getUnlimitedGrowthData.kinrespList}}
 	stop("getUnlimitedGrowthData: unknown class of argument kinrespRes. Must be a result of kinrespReplicate or kinrespGrowthphaseExperiment")
 })
 setMethodS3("getUnlimitedGrowthData","kinresp", function( 
@@ -97,7 +118,7 @@ setMethodS3("getUnlimitedGrowthData","kinresp", function(
 setMethodS3("getUnlimitedGrowthData","kinrespList", function(
 	### Extract the dataset with records of unlimited growth phase.
 	kinrespRes	##<< object of class kinrespList from \code{\link{kinrespGrowthphaseExperiment}}.
-	,n=list()	##<< named integer vector with names (character suite_experiment_replicate) speciying the number of records in growth phase, overriding the one obtained from \code{kinrespRes$n["n"]}
+	,n=c()		##<< integer vector with names (character suite_experiment_replicate) speciying the number of records in growth phase, overriding the one obtained from \code{kinrespRes$n["n"]}
 	,...
 ){
 	# getUnlimitedGrowthData.kinrespList
@@ -108,9 +129,11 @@ setMethodS3("getUnlimitedGrowthData","kinrespList", function(
 	
 	# kinrespRepName <- names(kinrespRes$resRep)[1]
 	# n[kinrespRepName] = 12
+	if( !is.integer(n) ) stop("getUnlimitedGrowthData.kinrespList: n must be an integer vector.")
+	kinrespRepName <- names(kinrespRes$resRep)[1]
 	res <- do.call( rbind, lapply(names(kinrespRes$resRep),function(kinrespRepName){
 		kinrespRep <- kinrespRes$resRep[[kinrespRepName]]
-		nRep <- if( 0<length(nRepPre <- n[[kinrespRepName]]) ) nRepPre else kinrespRep$n["n"]
+		nRep <- if( 0<length(nRepPre <- n[kinrespRepName]) ) nRepPre else kinrespRep$n["n"]
 		if( is.finite(nRep) )		
 			getUnlimitedGrowthData( kinrespRep, n=nRep )
 		else

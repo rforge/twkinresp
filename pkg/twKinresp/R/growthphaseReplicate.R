@@ -8,6 +8,7 @@ kinrespGrowthphaseReplicate <- function(
 ){
 	##seealso<< 
 	## \code{\link{kinrespGrowthphaseExperiment}}
+	## ,\code{\link{plotKinrespDiagnostics.kinresp}}
 	## ,\code{\link{twKinresp}}
 	
 	if( length(unique(rder$replicate)) != 1)
@@ -162,6 +163,9 @@ attr(kinrespGrowthphaseReplicate,"ex") <- function(){
 	res2 <- kinrespGrowthphaseReplicate(rder, weights=varPower(fixed=0.5)) 
 	res2$n["n"]		#display the number of records
 	lines( fitted(res2$fit) ~ getUnlimitedGrowthData(res2)$time ) #display the fitting line
+	
+	# plot diagnostics
+	plotKinrespDiagnostics(res2)	#use arrow keys to go back in plot history
 }
 
 .kinRespStatN <- function(

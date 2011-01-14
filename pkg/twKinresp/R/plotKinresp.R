@@ -27,11 +27,16 @@ setMethodS3("plotKinrespDiagnostics","kinresp", function(
 	,residType="pearson"   ##<< type of residuals, see argument type of \code{\link{residuals.lme}}
 	,rangeN=nrow(kinrespRes$dataGrowth)+c(1-nrow(kinrespRes$stat),0)
 		### the range (numeric vector of length two) of the number of records, for which diagnostic plots should be produced.
-	,...
+	,...	##<< further  arguments to array plotting 
+		## \itemize{
+		## \item rangeN: nCol integer scalar of number of columns
+		## \item topOffsetLine=0.08: inset of the diagnostics 
+		## }
 ){
 	# plotKinrespDiagnostics.kinresp
 		##seealso<< 
-		## \code{\link{kinrespGrowthphaseExperiment}}
+		## \code{\link{kinrespGrowthphaseReplicate}}
+		## ,\code{\link{kinrespGrowthphaseExperiment}}
 		## ,\code{\link{plotKinrespDiagnostics.kinrespList}}
 		## ,\code{\link{twKinresp}}
 		
@@ -136,7 +141,7 @@ setMethodS3("plotKinrespDiagnostics","kinrespList", function(
 	tmp.time <- paste(format(range(rder.e$time),digits=2,trim=TRUE),collapse=" to ")
 	mtext( paste("Time",tmp.time, xunit,expText),1, line=0.3,outer=TRUE)
 	#tmp.resp <- paste(format(range(tmp.r),digits=2,trim=TRUE),collapse=" to ")
-	mtext( paste("Respiration residual", yunit),2,line=0.3,outer=TRUE)
+	mtext( paste("Respiration residual", yunit),2,line=0.3,outer=TRUE,las=0)
 	if( plotFileBasename != ""){
 		tmp.t<-paste(plotFileBasename,"_residArray",sep="");savePlot(tmp.t,type="emf");savePlot(tmp.t,type="eps");savePlot(tmp.t,type="pdf")
 	}
@@ -205,7 +210,7 @@ setMethodS3("plotKinrespDiagnostics","kinrespList", function(
 	tmp.time <- paste(format(range(rder.e$time),digits=2,trim=TRUE),collapse=" to ")
 	mtext( paste("Time",tmp.time, xunit,expText),1, line=0.3,outer=TRUE)
 	tmp.resp <- paste(format(range(rder.e$resp),digits=2,trim=TRUE),collapse=" to ")
-	mtext( paste("Respiration Rate",tmp.resp, yunit),2,line=0.3,outer=TRUE)
+	mtext( paste("Respiration Rate",tmp.resp, yunit),2,line=0.3,outer=TRUE,las=0)
 	if( plotFileBasename != ""){
 		tmp.t<-paste(plotFileBasename,"_respArray",sep="");savePlot(tmp.t,type="emf");savePlot(tmp.t,type="eps");savePlot(tmp.t,type="pdf")
 	}
@@ -263,8 +268,12 @@ setMethodS3("plotKinrespDiagnostics","kinrespList", function(
 			mtext(paste("n=",nrow(rder.e)+1-i,sep=""),side=3,line=-1.1-topOffsetLine, adj=0.02)
 			# lines -1.1, -2.3, -3.5, -4.7,  -5.9
 			mtext(tmp4,side=3,line=-2.3, adj=0.02)
-			tmp.c <- "r2"
-			mtext(paste("r2=",signif(tmp.stat[i,tmp.c],5),sep="")
+			#tmp.c <- "r2"
+			#mtext(paste("r2=",signif(tmp.stat[i,tmp.c],5),sep="")
+		#		,side=3,line=-3.5-topOffsetLine, adj=0.02
+	#			, font={tmp <- 1; if(!is.na(tmp.is[tmp.c]) & tmp.is[tmp.c] == i){ tmp <- 2}; tmp})
+			tmp.c <- "r2w"
+			mtext(paste("r2w=",signif(tmp.stat[i,tmp.c],4),sep="")
 				,side=3,line=-3.5-topOffsetLine, adj=0.02
 				, font={tmp <- 1; if(!is.na(tmp.is[tmp.c]) & tmp.is[tmp.c] == i){ tmp <- 2}; tmp})
 			tmp.c <- "Q"
@@ -284,7 +293,7 @@ setMethodS3("plotKinrespDiagnostics","kinrespList", function(
 	tmp.time <- paste(format(range(rder.e$time),digits=2,trim=TRUE),collapse=" to ")
 	mtext( paste("Time",tmp.time, xunit,expText),1, line=0.3,outer=TRUE)
 	tmp.resp <- paste(format(range(rder.e$resp),digits=2,trim=TRUE),collapse=" to ")
-	mtext( paste("log(Respiration Rate",tmp.resp, yunit,"- beta0)"),2,line=0.3,outer=TRUE)
+	mtext( paste("log(Respiration Rate",tmp.resp, yunit,"- beta0)"),2,line=0.3,outer=TRUE,las=0)
 	if( plotFileBasename != ""){
 		tmp.t<-paste(plotFileBasename,"_respLogArray",sep="");savePlot(tmp.t,type="emf");savePlot(tmp.t,type="eps");savePlot(tmp.t,type="pdf")
 	}
