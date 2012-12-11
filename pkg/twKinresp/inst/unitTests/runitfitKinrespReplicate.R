@@ -30,7 +30,7 @@ test.fitKinrespBetaReplicate <- function(){
 	checkEquals( res3,  res4)
 }
 
-.tmp.f <- function(){
+.tmp.f <- function(rder.e){
 	plot(res2)
 	plot( resp~time, data=rder.e)
 	lines( fitted(res2)~rder.e$time)

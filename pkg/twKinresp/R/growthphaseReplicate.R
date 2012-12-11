@@ -189,7 +189,7 @@ attr(kinrespGrowthphaseReplicate,"ex") <- function(){
 #kinRespStatN(tmp.ns)
 
 
-.tmp.f <- function(){
+.tmp.f <- function(rd, experiment){
 	i_exp <- 11
 	rde <- subset(rd, experiment==i_exp)
 	i_rep <- 3

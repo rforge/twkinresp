@@ -14,18 +14,21 @@ fitKinrespExperiment <- function(
 	, tmp.names = c("none","x0l","r0l","x0l+r0l","x0l+r0l+mumaxl")	##<< scenarios of random effects
 	, showFitErrorMsg=FALSE	##<< if FALSE (standard) then error msg are suppressed when no fit is obtained. This is a common case for the test of variants that include too many random effects.
 ){
-	##alias<< twKinresp
-	##details<< \describe{\item{Features of the twKinresp package}{
-	## \itemize{
-	## \item{ Getting the respiration data into correct format: \code{\link{setFactorKinrespData}} }
-	## \item{ Confining the time series to the unlimited growth phase: \code{\link{kinrespGrowthphaseExperiment}} }
-	## \item{ Fitting the beta parameter form of the kinetic model to respiration data: \code{\link{fitKinrespBetaReplicate}} }
-	## \item{ Fitting the microbial paramter form of the kinetic model to respiration data: this function }
-	## \item{ Access the coefficients and confidence intervals of fitted models: \code{\link{coefKinresp.default}} }
-	## }
-	##}}	
-	
-	##details<< \describe{\item{Variance function}{
+    ##details<< \describe{\item{Microbial parameters across replicates}{
+    ## Microbial parameters can be inferred from fitting against the time series of respiration 
+    ## of each replicate separately (\code{\link{fitKinrespReplicate}}.
+    ## However, what are then parameters of the population? The average across replicate parameters will be wrong.
+    ##
+    ## Alternatively, one can first average the measurement across replicates at for each measurement time.
+    ## However, the uncertainty of the parameters will be wrong.
+    ##
+    ## A viable soluion is to fit a mixed model to all the replicate data. The micoribal parameters, then are
+    ## described by a mean value of the population and a variance across replicates.
+    ## Several options of which parameters vary across replicates can be tested.
+    ## }}
+    
+    ##details<<
+    ## \describe{\item{Variance function}{
 	## If no weights are given, the measurement errors of the single
 	## observations are assumed to be identical. If measurement errors
 	## increase with the magnitude of the observations, this can be
@@ -33,7 +36,7 @@ fitKinrespExperiment <- function(
 	## \code{weights=\link{varPower}(fixed=delta)},
 	## with delta being a value between 0 (constant expected absolute error) 
 	## and 1 (constant expected relative error).
-	##}}
+	## }}
 	
 	if( length(unique(rde.e$experiment)) != 1)
 		stop("fitKinrespExperiment: found other than 1 unique experiment identifier in argument rde.e")
@@ -59,7 +62,7 @@ fitKinrespExperiment <- function(
 				tmp.name <- tmp.names[1]
 				tmp.fit1 <- gnls(
 					resp ~ exp(x0l)*(1-invlogit(r0l))*(1/lambda-1)*exp(mumaxl)/YCO2 + exp(x0l)*invlogit(r0l)*1/lambda*exp(mumaxl)/YCO2 * exp( exp(mumaxl) * time)  
-					, param=list(mumaxl+r0l+x0l~1)
+					, params=list(mumaxl+r0l+x0l~1)
 					, start=start
 					, weights=weights
 					, data=rde.eg
@@ -108,18 +111,22 @@ fitKinrespExperiment <- function(
 	### }
 }
 attr(fitKinrespExperiment,"ex") <- function(){
+    # data of one example treament: measurements of several replicates of one soil
 	data(respWutzler10)
 	rde <- subset(respWutzler10, suite=="Face" & experiment==9 )
 	
 	# constrain data to unlimited growth phase
 	res4 <- kinrespGrowthphaseExperiment(rde, weights=varPower(fixed=0.5) )
-	rde.e <- getUnlimitedGrowthData(res4)
-	# fit the mixed model
+    rde.e <- getUnlimitedGrowthData(res4)
+	# fit the mixed model to all replicates
 	res5Scen <- fitKinrespExperiment( rde.e, coefKinresp(res4,rde.e), weights=varPower(fixed=0.5) )
 	
+    # get the best fit parameters of the population
+    coefKinresp(fixef(res5Scen$model))
+    
 	# examine the random-effects scenarios: 
-	# Here the lowest AIC suggest that activity state and initial microbial biomass 
-	# differed between replicates 
+	# Here the lowest AIC suggest that activity state and initial microbial biomass
+	# differed between replicates, but maximum growth was the same
 	res5Scen$aics
 	
 	# plot the fits
@@ -137,9 +144,6 @@ attr(fitKinrespExperiment,"ex") <- function(){
 	fx <- dlogitnorm(xGrid, mu=pars[iPar,"mu"],sigma=pars[iPar,"sigma"])
 	plot( fx ~ xGrid, type="l", xlab=iPar, ylab="density" )
 	abline(v=pars[iPar,c("mle","median","mean","cf025","cf975")], col=c("red","green","blue","gray","gray"))
-	
-	
-	
 }
 
 modelKinrespMic <- function(
@@ -167,7 +171,7 @@ fitKinrespReplicate <- function(
 	# fitKinrespRepl
 
 	##seealso<< 
-	## \code{\link{twKinresp}}
+	## \code{\link{twKinresp}}, \code{\link{coefKinresp}} 
 	
 	##details<<  
 	## If the microbial explicit form did not fit, then the beta fit is returned.
@@ -237,7 +241,7 @@ fitKinrespReplicate <- function(
 }
 
 
-.tmp.f <- function(){
+.tmp.f <- function(rder.e){
 	(tmp.m <- fitKinrespReplicate(rder.e))
 	plot(rder.e$resp ~ rder.e$time)
 	(tmp.mb <- fitExpModel(x=rder.e$time, y=rder.e$resp))
@@ -385,7 +389,7 @@ fitKinrespReplicate <- function(
 }
 #mtrace(.fitKinExperimentBeta)
 
-.tmp.f <- function(){
+.tmp.f <- function(tmp.fit2.e){
 	#no sense to fit uncorrelated beta0 and beta1
 	try({ tmp.fits[["beta0+beta1"]] <- tmp.fit <- update( tmp.fit2.e, random=pdDiag(beta0+beta1~1)); tmp.aic["beta0+beta1"] <- AIC(tmp.fits[["beta0+beta1"]]) },silent = TRUE)	
 	try({ tmp.fits[["beta0+beta1+beta2"]] <- update( tmp.fit2.e, random=pdDiag(beta0+beta1+beta2~1)); tmp.aic["beta0+beta1+beta2"] <- AIC(tmp.fits[["beta0+beta1+beta2"]]) },silent = TRUE)
@@ -403,7 +407,7 @@ fitKinrespReplicate <- function(
 			},silent = TRUE)	
 }	
 
-.tmp.f <- function(){
+.tmp.f <- function(rd.e){
 	i_exp <- 31
 	i_exp <- "Ul_6_46"
 	rde.e <- subset( rd.e, experiment==i_exp )	#entire experiment
@@ -503,7 +507,7 @@ fitKinrespSuite <- function(
 		tmp.name <- tmp.names[1]
 		tmp.fit1 <- gnls(
 				resp ~ exp(x0l)*(1-invlogit(r0l))*(1/lambda-1)*exp(mumaxl)/YCO2 + exp(x0l)*invlogit(r0l)*1/lambda*exp(mumaxl)/YCO2 * exp( exp(mumaxl) * time)  
-				, param=list(mumaxl+r0l+x0l~experiment)
+				, params=list(mumaxl+r0l+x0l~experiment)
 				, start=start
 				, weights=weights
 				, data=rds.eg

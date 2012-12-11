@@ -212,7 +212,7 @@ setMethodS3("coefList","kinrespList", function(
 	tmp.cf
 }
 
-.tmp.f <- function(){
+.tmp.f <- function(rder.e){
 	x <- rder.e$time
 	y <- rder.e$resp
 }

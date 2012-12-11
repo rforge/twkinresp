@@ -12,9 +12,9 @@ kinrespModel1 <- function(
 	### respiration at given time points (numeric vector)
 }
 attr(kinrespModel1,"ex") <- function(){
-	data(dsKinrespTut)
-	ds <- subset(dsKinrespTut, replicate==1 )
-	resp0 <- kinrespModel1( x0=140, r0=2e-3, mumax=0.24, time=ds$time)
+	data(respWutzler10)
+	ds <- subset(respWutzler10, replicate==1 & experiment ==  1 & suite == 'Face' & time < 25)
+	resp0 <- kinrespModel1( x0=118, r0=0.029, mumax=0.21, time=ds$time)
 	plot( resp~time, data=ds)
 	lines(resp0~ds$time)
 }

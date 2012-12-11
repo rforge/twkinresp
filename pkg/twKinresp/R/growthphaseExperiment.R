@@ -117,8 +117,9 @@ setMethodS3("getUnlimitedGrowthData","kinresp", function(
 
 setMethodS3("getUnlimitedGrowthData","kinrespList", function(
 	### Extract the dataset with records of unlimited growth phase.
-	kinrespRes	##<< object of class kinrespList from \code{\link{kinrespGrowthphaseExperiment}}.
-	,n=c()		##<< integer vector with names (character suite_experiment_replicate) speciying the number of records in growth phase, overriding the one obtained from \code{kinrespRes$n["n"]}
+	kinrespRes	    ##<< object of class kinrespList from \code{\link{kinrespGrowthphaseExperiment}}.
+	,n=integer(0)	##<< integer vector with names (character suite_experiment_replicate) speciying the number of records in growth phase, 
+        ##<< if not given (length zero), the defaults from \code{kinrespRes$n["n"]} are used 
 	,...
 ){
 	# getUnlimitedGrowthData.kinrespList
@@ -129,11 +130,21 @@ setMethodS3("getUnlimitedGrowthData","kinrespList", function(
 	
 	# kinrespRepName <- names(kinrespRes$resRep)[1]
 	# n[kinrespRepName] = 12
-	if( !is.integer(n) ) stop("getUnlimitedGrowthData.kinrespList: n must be an integer vector.")
-	kinrespRepName <- names(kinrespRes$resRep)[1]
+    if( length(n) ){ # number are explicitly given
+        if( !is.numeric(n) ) stop("getUnlimitedGrowthData.kinrespList: n must be an integer vector.")
+        if( length(names) ){
+            if( !all(names(n) == names(kinrespRes$resRep)) ) stop("getUnlimitedGrowthData.kinrespList: n has wrong names. Either give no names or give names corresponding to a name of the replicate series.")    
+        }else
+            if( length(n) != length(kinrespRes$resRep) ) stop("getUnlimitedGrowthData.kinrespList: n has wrong length. It must have an entry for each replicate.")
+    }else{
+        # defaults from replicates
+        n <- sapply( kinrespRes$resRep, function(kinrespRep){ kinrespRep$n["n"]} )
+        names(n) <- names(kinrespRes$resRep)
+    }
+	#kinrespRepName <- names(kinrespRes$resRep)[1]
 	res <- do.call( rbind, lapply(names(kinrespRes$resRep),function(kinrespRepName){
 		kinrespRep <- kinrespRes$resRep[[kinrespRepName]]
-		nRep <- if( 0<length(nRepPre <- n[kinrespRepName]) ) nRepPre else kinrespRep$n["n"]
+        nRep <- n[kinrespRepName]
 		if( is.finite(nRep) )		
 			getUnlimitedGrowthData( kinrespRep, n=nRep )
 		else
