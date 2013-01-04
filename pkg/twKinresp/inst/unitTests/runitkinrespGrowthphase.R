@@ -16,7 +16,7 @@ test.kinrespGrowthphase <- function(){
 	checkEquals( 9, length(res1$resRep) )  # regression test (from former run)
 	
 	suppressWarnings(dir.create("tmp"))
-	windows(pointsize=10,width=6.4,height=6.4, record=TRUE)
+	#windows(pointsize=10,width=6.4,height=6.4, record=TRUE)
 	plotKinrespDiagnostics(res1, plotFileBasename = file.path("tmp/testKinrespGrowthphase") )
 	
 	rd.e <- getUnlimitedGrowthData(res1)

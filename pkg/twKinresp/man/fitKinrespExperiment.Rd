@@ -69,7 +69,7 @@ res5Scen <- fitKinrespExperiment( rde.e, coefKinresp(res4,rde.e), weights=varPow
 res5Scen$aics
 
 # plot the fits
-windows(record=TRUE)
+#windows(record=TRUE)
 rde.e$fitted <- fitted(res5Scen$model)
 plot( resp ~ time, data=rde.e, col=rde.e$replicate )
 tmp <- by( rde.e, rde.e$replicate, function(rder){ lines(fitted~time,data=rder, col=as.numeric(rder[1,replicate]))})
