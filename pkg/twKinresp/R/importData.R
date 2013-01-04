@@ -21,12 +21,14 @@ setFactorKinrespData <- function(
 	### Modification of input rd.
 }
 attr(setFactorKinrespData,"ex") <- function(){
-	(dataFilename <- file.path( system.file(package="twKinresp"), "data", "respWutzler10.csv" ))
-	# may open the file with a text editor or a spreadsheet program to inspect the format
-	rd0 <- read.csv(dataFilename)	# reading the data from file
-	rd <- setFactorKinrespData(rd0) # Factor coding
-	str(rd)
-	rd[1:10,]
+    if( FALSE){  # data file not available at R CHECK on R-forge
+    	(dataFilename <- file.path( system.file(package="twKinresp"), "data", "respWutzler10.csv" ))
+    	# may open the file with a text editor or a spreadsheet program to inspect the format
+    	rd0 <- read.csv(dataFilename)	# reading the data from file
+    	rd <- setFactorKinrespData(rd0) # Factor coding
+    	str(rd)
+    	rd[1:10,]
+    }
 }
 
 assembleKinrespData <- function( 
