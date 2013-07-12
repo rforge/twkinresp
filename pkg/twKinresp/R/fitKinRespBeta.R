@@ -117,7 +117,7 @@ modelKinrespBeta <- function(
 
 
 #coef.kinRespRepBetaPos <- function(tmp.m){ #coef is used by confint and others
-setMethodS3("coefKinrespBeta","default", function( 
+R.methodsS3::setMethodS3("coefKinrespBeta","default", function( 
 	### Transform coefficients from Beta-Model from log-Scale to original scale.
 	tmp.coef	## beta coefficients at transformed scale, e.g. \code{coef(model1)}
 	,...
@@ -147,7 +147,7 @@ setMethodS3("coefKinrespBeta","default", function(
 	### Named vector beta0,beta1,beta2 at original scale.
 })
 
-setMethodS3("coefKinrespBeta","kinrespList", function(
+R.methodsS3::setMethodS3("coefKinrespBeta","kinrespList", function(
 		### Check the microbial coefficients and translate to original microbial scale for all replicates.
 		tmp.coef	##<< result of \code{\link{kinrespGrowthphaseExperiment}}
 		,rds.e=NULL ##<< constrained dataset, which may omit some replicates
@@ -168,7 +168,7 @@ setMethodS3("coefKinrespBeta","kinrespList", function(
 		### named numer matrix (columns experiment, replicate, mumax, x0, and r0) with rows corresponding replicates
 	})
 
-setMethodS3("coefList","kinrespList", function(
+R.methodsS3::setMethodS3("coefList","kinrespList", function(
 		### Extract the coefficients for each replicate
 		tmp.coef	##<< result of \code{\link{kinrespGrowthphaseExperiment}}
 		,rds.e=NULL ##<< constrained dataset, which may omit some replicates

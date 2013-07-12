@@ -1,4 +1,4 @@
-setMethodS3("kinrespParDist","gnls", function(
+R.methodsS3::setMethodS3("kinrespParDist","gnls", function(
 	### Expected value and confidence interval of microbial parameters
 	model	##<< the result of the \code{\link{fitKinrespReplicate}} or \code{\link{fitKinrespExperiment}$model}
 	,...	##<< currently not used
@@ -57,7 +57,7 @@ setMethodS3("kinrespParDist","gnls", function(
 	### }
 })
 
-setMethodS3("kinrespParDist","nlme", function(
+R.methodsS3::setMethodS3("kinrespParDist","nlme", function(
 	### Expected value and confidence interval of microbial parameters
 	model	##<< the result of the \code{\link{fitKinrespReplicate}} or \code{\link{fitKinrespExperiment}$model}
 	,...	##<< currently not used
@@ -69,7 +69,7 @@ setMethodS3("kinrespParDist","nlme", function(
 	kinrespParDist.gnls(model,...)
 })
 		 		
-setMethodS3("coefKinresp","default", function( 
+R.methodsS3::setMethodS3("coefKinresp","default", function( 
 		### Check the microbial coefficients and translate to original microbial scale.
 		tmp.coef	##<< coefficients of model fit \code{coef(model)} (see details)
 		,...
@@ -136,7 +136,7 @@ setMethodS3("coefKinresp","default", function(
 		### named numeric vector (x0,r0,mumax)
 	})
 
-setMethodS3("coefKinresp","kinrespList", function(
+R.methodsS3::setMethodS3("coefKinresp","kinrespList", function(
 		### Check the microbial coefficients and translate to original microbial scale for all replicates.
 		tmp.coef	##<< result of \code{\link{kinrespGrowthphaseExperiment}}
 		,rds.e=NULL ##<< constrained dataset, which may omit some replicates
@@ -157,7 +157,7 @@ setMethodS3("coefKinresp","kinrespList", function(
 		### named numer matrix (columns experiment, replicate, mumax, x0, and r0) with rows corresponding replicates
 	})
 
-setMethodS3("fixef","kinresp", function( 
+R.methodsS3::setMethodS3("fixef","kinresp", function( 
 		### Make fixed.effects deliver attribute r0 if this is supplied with model.
 		object
 		,...
@@ -172,7 +172,7 @@ setMethodS3("fixef","kinresp", function(
 		tmp
 	})
 
-setMethodS3("coef","kinresp", function( 
+R.methodsS3::setMethodS3("coef","kinresp", function( 
 		### Make coef deliver attribute r0 if this is supplied with model.
 		object
 		,...
@@ -188,7 +188,7 @@ setMethodS3("coef","kinresp", function(
 		tmp
 	})
 
-setMethodS3("confint","kinresp", function( 
+R.methodsS3::setMethodS3("confint","kinresp", function( 
 		### Make confint deliver attribute r0 if this was supplied with object
 		object
 		,...
