@@ -10,7 +10,7 @@
 	1 - sum(((ypred-y)[bo])^2*weights) / sum( (y[bo] - mean(y[bo]))^2*weights )	
 }
 
-R.methodsS3::setMethodS3("fixef","gnls", function(
+setMethodS3("fixef","gnls", function(
 	### Fixed coefficients of either nlme or gnls (S3 method).
 	object	##<< model, whose fixed coefficients should be accessed
 	,...
@@ -33,7 +33,7 @@ R.methodsS3::setMethodS3("fixef","gnls", function(
 #support similar access to the correlation matrix of gnls and nlme
 #extractCorrMatrix <- function(x, ...){ UseMethod("extractCorrMatrix") }
 
-R.methodsS3::setMethodS3("extractCorrMatrix","gnls", function( 
+setMethodS3("extractCorrMatrix","gnls", function( 
 	### Access to correlation matrix of gnls.
 	modelfit	##<< result of gnls
 	,...
@@ -41,7 +41,7 @@ R.methodsS3::setMethodS3("extractCorrMatrix","gnls", function(
 	summary(modelfit)$corBeta
 })
 
-R.methodsS3::setMethodS3("extractCorrMatrix","nlme", function( 
+setMethodS3("extractCorrMatrix","nlme", function( 
 	### Access to correlation matrix of nlme.
 	modelfit	##<< result of nlme
 	,...
@@ -63,7 +63,7 @@ R.methodsS3::setMethodS3("extractCorrMatrix","nlme", function(
 	diag(tmp.fit$varFix) + diag( .extractRandomCovMatrix(tmp.fit) )
 }
 
-R.methodsS3::setMethodS3("confint","nlme", function( 
+setMethodS3("confint","nlme", function( 
 	### confidence intervals for the parameters of nlme fit, population level. 
 	object
 	,...

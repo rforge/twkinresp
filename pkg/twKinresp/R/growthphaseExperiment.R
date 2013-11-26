@@ -90,7 +90,7 @@ combineKinrespLists <- function(
 	res
 }
 
-R.methodsS3::setMethodS3("getUnlimitedGrowthData","default", function( 
+setMethodS3("getUnlimitedGrowthData","default", function( 
 	### Extract the dataset with records of unlimited growth phase.
 	kinrespRes
 	,...
@@ -100,7 +100,7 @@ R.methodsS3::setMethodS3("getUnlimitedGrowthData","default", function(
 	## \code{\link{getUnlimitedGrowthData.kinrespList}}
 	stop("getUnlimitedGrowthData: unknown class of argument kinrespRes. Must be a result of kinrespReplicate or kinrespGrowthphaseExperiment")
 })
-R.methodsS3::setMethodS3("getUnlimitedGrowthData","kinresp", function( 
+setMethodS3("getUnlimitedGrowthData","kinresp", function( 
 	### Extract the dataset with records of unlimited growth phase.
 	kinrespRes				##<< object of class kinresp from \code{\link{kinrespGrowthphaseReplicate}}.
 	,n=kinrespRes$n["n"]	##<< the number of records in the growth phase
@@ -115,7 +115,7 @@ R.methodsS3::setMethodS3("getUnlimitedGrowthData","kinresp", function(
 	kinrespRes$dataGrowth[1:n,]
 })
 
-R.methodsS3::setMethodS3("getUnlimitedGrowthData","kinrespList", function(
+setMethodS3("getUnlimitedGrowthData","kinrespList", function(
 	### Extract the dataset with records of unlimited growth phase.
 	kinrespRes	    ##<< object of class kinrespList from \code{\link{kinrespGrowthphaseExperiment}}.
 	,n=integer(0)	##<< integer vector with names (character suite_experiment_replicate) speciying the number of records in growth phase, 

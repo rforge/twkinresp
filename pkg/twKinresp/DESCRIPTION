@@ -6,7 +6,7 @@ Author: Thomas Wutzler <thomas.wutzler@web.de>
 Maintainer: Thomas Wutzler <thomas.wutzler@web.de>
 Depends: R (>= 2.10.0), logitnorm, nlme, lmtest
 Imports: R.methodsS3
-Suggests: debug, RUnit
+Suggests: RUnit 
 Description:   Estimating microbial parameters: 
     x0: initial microbial biomass, r0: initial microbial activity, and mumax: maximum growth rate of microbial community
     by fitting kinetic models to microbial respiration data of several replicates. 

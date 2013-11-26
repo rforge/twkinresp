@@ -1,4 +1,4 @@
-R.methodsS3::setMethodS3("plotKinrespDiagnostics","default", function( 
+setMethodS3("plotKinrespDiagnostics","default", function( 
 	### Diagnostic plots for confining unlimited growth phase.
 		kinrespRes
 		,...
@@ -10,7 +10,7 @@ R.methodsS3::setMethodS3("plotKinrespDiagnostics","default", function(
 		stop("plotKinrespDiagnostics.default: unknown class of argument kinrespRes. Must be a result of kinrespGrowthphaseReplicate or kinrespGrowthphaseExperiment")
 	})
 
-R.methodsS3::setMethodS3("plotKinrespDiagnostics","kinresp", function( 
+setMethodS3("plotKinrespDiagnostics","kinresp", function( 
 	### Diagnostic plots for confining unlimited growth phase.
 	kinrespRes				##<< object of class kinresp from \code{\link{kinrespGrowthphaseReplicate}} to plot diagnostics for.
 	,plotFileBasename=""	##<< basename of figure files for diagnostic plots
@@ -61,7 +61,7 @@ R.methodsS3::setMethodS3("plotKinrespDiagnostics","kinresp", function(
 	### invisible(NULL)
 })
 
-R.methodsS3::setMethodS3("plotKinrespDiagnostics","kinrespList", function(
+setMethodS3("plotKinrespDiagnostics","kinrespList", function(
 	### Diagnostic plots for confining unlimited growth phase for each replicate.
 	kinrespRes				##<< object of class kinrespList from \code{\link{kinrespGrowthphaseExperiment}} to plot diagnostics for.
 	,plotFileBasename=""	##<< basename of figure files for diagnostic plots
