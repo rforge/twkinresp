@@ -1,7 +1,7 @@
 .setUp <- function(){
-	data(respWutzler10)
+	#data(respWutzler10)
 	.setUpDf <- within( list(),{
-			rde <- subset(respWutzler10, suite=="Face" & experiment==3 )
+			rde <- subset(respWutzler10, suite == "Face" & experiment == 3 )
 		})
 	attach(.setUpDf)
 }

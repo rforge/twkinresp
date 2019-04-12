@@ -15,7 +15,7 @@ tmp <- sapply(Sys.glob(file.path("R","*.R")), source)
 #tmp <- sapply(Sys.glob(file.path("R","multiTemp.R")), sfSource)
 #library(twMisc)
 #data( list=twStripFileExt(basename(Sys.glob(file.path("data","*.RData")))))
-data(respWutzler10)
+#data(respWutzler10)
 
 #mtrace(twUtest)
 #(res <- twUtestF(fitKinrespExperiment,divertOutputFile=NULL))
@@ -25,7 +25,7 @@ library(twMisc)
 
 tmp.f <- function(){
 	library(inlinedocs)
-	unlink( file.path("man","*.Rd") )	
+	unlink( file.path("man","*.Rd") )
 	package.skeleton.dx(".")
 }
 

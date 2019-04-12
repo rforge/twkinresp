@@ -5,22 +5,22 @@ kinrespGrowthphaseExperiment <- function(
 	, ...	##<< further arguments to \code{\link{kinrespGrowthphaseReplicate}}
 	, stopOnReplicateError=FALSE	##<< By default replicates where not fit is obtained are ignored.
 ){
-	##seealso<< 
+	##seealso<<
 	## \code{\link{twKinresp}}
-	
+
 	##details<< \describe{\item{Functions for Confining the time series to the unlimited growth phase}{
 	## \itemize{
 	## \item{ Calculating fits and statistics: this method and \code{\link{kinrespGrowthphaseReplicate}} }
 	## \item{ Extracting the records of the unlimited growth phase: \code{\link{getUnlimitedGrowthData.kinresp}} and \code{\link{getUnlimitedGrowthData.kinrespList}} }
 	## \item{ Plotting diagnostic plots: \code{\link{plotKinrespDiagnostics.kinresp}} and \code{\link{plotKinrespDiagnostics.kinrespList}} }
 	## }
-	##}}	
-	
+	##}}
+
 	if( length(unique(rde$suite)) != 1)
 		stop("kinrespGrowthphaseExperiment: found other than 1 unique suite identifier in argument rde")
 	if( length(unique(rde$experiment)) != 1)
 		stop("kinrespGrowthphaseExperiment: found other than 1 unique experiment identifier in argument rde")
-	
+
 	repIds <- as.character(unique(rde$replicate))
 	expName <- rde$experiment[1]
 	suiteName <- rde$suite[1]
@@ -28,7 +28,7 @@ kinrespGrowthphaseExperiment <- function(
 	tmp.errs <- list()
 	tmp.n <- list()	#will be converted to data.frame afterwards
 	tmp.resRep <- list()
-	
+
 	i <- 2
 	#get the experimental growth phase of each replicate
 	for( i in seq_along(repIds)){
@@ -47,20 +47,20 @@ kinrespGrowthphaseExperiment <- function(
 		if( inherits(tmp.res, "try-error")){
 			tmp.errs[[i_exprep]] <- tmp.res[1]
 		}else{
-			tmp.resRep[[i_exprep]] <- tmp.res 
+			tmp.resRep[[i_exprep]] <- tmp.res
 			tmp.n[[i_exprep]] <- tmp.res$n
 		}
 	}
-	
+
 	# if no replicate was fitted (no data) signal an error
 	#   dataset that only contains the exponential growth phase of each replicate
 	#	errors: informaiton on errors, on some replicates
 	dfn <- do.call( rbind, tmp.n )
 	dfn2 <- cbind( data.frame( suite=suiteName, experiment=expName, replicate=repIds, ser=names(tmp.resRep)), dfn )
 	res <- list(
-		n=dfn2				
-		, resRep=tmp.resRep	 
-		, errors=tmp.errs	 
+		n=dfn2
+		, resRep=tmp.resRep
+		, errors=tmp.errs
 	)
 	class(res) <- "kinrespList"
 	res
@@ -72,7 +72,7 @@ kinrespGrowthphaseExperiment <- function(
 }
 #mtrace(kinrespGrowthphaseExperiment)
 
-combineKinrespLists <- function( 
+combineKinrespLists <- function(
 	### Combine several kinrespList to one bigger kinrespList.
 	x		##<< List of kinrespList entries
 ){
@@ -90,50 +90,51 @@ combineKinrespLists <- function(
 	res
 }
 
-setMethodS3("getUnlimitedGrowthData","default", function( 
+setMethodS3("getUnlimitedGrowthData","default", function(
 	### Extract the dataset with records of unlimited growth phase.
 	kinrespRes
 	,...
 ){
-	##seealso<< 
+	##seealso<<
 	## \code{\link{getUnlimitedGrowthData.kinresp}}
 	## \code{\link{getUnlimitedGrowthData.kinrespList}}
 	stop("getUnlimitedGrowthData: unknown class of argument kinrespRes. Must be a result of kinrespReplicate or kinrespGrowthphaseExperiment")
 })
-setMethodS3("getUnlimitedGrowthData","kinresp", function( 
+setMethodS3("getUnlimitedGrowthData","kinresp", function(
 	### Extract the dataset with records of unlimited growth phase.
 	kinrespRes				##<< object of class kinresp from \code{\link{kinrespGrowthphaseReplicate}}.
 	,n=kinrespRes$n["n"]	##<< the number of records in the growth phase
 	,...
 ){
 	# getUnlimitedGrowthData.kinresp
-	##seealso<< 
+	##alias<< getUnlimitedGrowthData
+	##seealso<<
 	## \code{\link{kinrespGrowthphaseExperiment}}
 	## ,\code{\link{getUnlimitedGrowthData.kinrespList}}
 	## ,\code{\link{twKinresp}}
-		
+
 	kinrespRes$dataGrowth[1:n,]
 })
 
 setMethodS3("getUnlimitedGrowthData","kinrespList", function(
 	### Extract the dataset with records of unlimited growth phase.
 	kinrespRes	    ##<< object of class kinrespList from \code{\link{kinrespGrowthphaseExperiment}}.
-	,n=integer(0)	##<< integer vector with names (character suite_experiment_replicate) speciying the number of records in growth phase, 
-        ##<< if not given (length zero), the defaults from \code{kinrespRes$n["n"]} are used 
+	,n=integer(0)	##<< integer vector with names (character suite_experiment_replicate) speciying the number of records in growth phase,
+        ##<< if not given (length zero), the defaults from \code{kinrespRes$n["n"]} are used
 	,...
 ){
 	# getUnlimitedGrowthData.kinrespList
-	##seealso<< 
+	##seealso<<
 	## \code{\link{kinrespGrowthphaseExperiment}}
 	## ,\code{\link{getUnlimitedGrowthData.kinresp}}
 	## ,\code{\link{twKinresp}}
-	
+
 	# kinrespRepName <- names(kinrespRes$resRep)[1]
 	# n[kinrespRepName] = 12
     if( length(n) ){ # number are explicitly given
         if( !is.numeric(n) ) stop("getUnlimitedGrowthData.kinrespList: n must be an integer vector.")
         if( length(names) ){
-            if( !all(names(n) == names(kinrespRes$resRep)) ) stop("getUnlimitedGrowthData.kinrespList: n has wrong names. Either give no names or give names corresponding to a name of the replicate series.")    
+            if( !all(names(n) == names(kinrespRes$resRep)) ) stop("getUnlimitedGrowthData.kinrespList: n has wrong names. Either give no names or give names corresponding to a name of the replicate series.")
         }else
             if( length(n) != length(kinrespRes$resRep) ) stop("getUnlimitedGrowthData.kinrespList: n has wrong length. It must have an entry for each replicate.")
     }else{
@@ -145,7 +146,7 @@ setMethodS3("getUnlimitedGrowthData","kinrespList", function(
 	res <- do.call( rbind, lapply(names(kinrespRes$resRep),function(kinrespRepName){
 		kinrespRep <- kinrespRes$resRep[[kinrespRepName]]
         nRep <- n[kinrespRepName]
-		if( is.finite(nRep) )		
+		if( is.finite(nRep) )
 			getUnlimitedGrowthData( kinrespRep, n=nRep )
 		else
 			kinrespRep$dataGrowth[FALSE,]
@@ -161,15 +162,15 @@ kinrespGrowthphase <- function(
 	rd		##<< data.frame with columns suite, experiment, replicate, resp and time
 	, ...	##<< further arguments to \code{\link{kinrespGrowthphaseExperiment}}
 ){
-	##seealso<< 
+	##seealso<<
 	## \code{\link{twKinresp}}
 	# experiment identifier may be the same for different suits
 	suiteExp <- (rd$suite:rd$experiment)[drop=TRUE]	#dropping unused levels see ?interaction
-	#rde <- subset(rd,suiteExp=="Face:3") 
+	#rde <- subset(rd,suiteExp=="Face:3")
 	resl <- by( rd, suiteExp, function(rde){
 		#resExp <- resExp0 <- kinrespGrowthphaseExperiment(rde,weights=varPower(fixed=0.3))
-		#kinrespGrowthphaseExperiment(rde,weights=varPower(fixed=0.3),stopOnReplicateError=TRUE)		
-		kinrespGrowthphaseExperiment(rde,...)		
+		#kinrespGrowthphaseExperiment(rde,weights=varPower(fixed=0.3),stopOnReplicateError=TRUE)
+		kinrespGrowthphaseExperiment(rde,...)
 	})
 	names(resl) <- rep("", length(resl))
 	res <- list(

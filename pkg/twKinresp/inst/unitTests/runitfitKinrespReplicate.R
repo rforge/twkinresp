@@ -1,5 +1,5 @@
 .setUp <- function(){
-	data(respWutzler10)
+	#data(respWutzler10)
 	.setUpDf <- within( list(),{
 			rder <- subset(respWutzler10, suite=="Face" & experiment==3 & replicate==2 )
 			rder.e <- rder[1:which.max(rder$resp),]
@@ -20,12 +20,12 @@ test.fitKinrespBetaReplicate <- function(){
 	checkTrue( all(resBeta > 0) )
 	checkEqualsNumeric( fitted(res2), modelKinrespBeta(rder.e$time,resBeta) )
 	checkEquals( coef(res2), .coefKinrespBetaLogStart(resBeta) )
-	
+
 	#mtrace(calcKinrespCoef)
 	res3 <- calcKinrespCoef( coef(res2) )
 	#regression test from former result
 	checkEqualsNumeric( c(mumax=0.20, r0=0.02, x0=118.48), res3, tol=0.01 )
-	
+
 	res4 <- coefKinresp(coef(res2))
 	checkEquals( res3,  res4)
 }
@@ -35,13 +35,13 @@ test.fitKinrespBetaReplicate <- function(){
 	plot( resp~time, data=rder.e)
 	lines( fitted(res2)~rder.e$time)
 	lines( modelKinrespBeta(rder.e$time,resBeta)~rder.e$time, col="red")
-	
+
 	lines( fitted(res10)~rder.e$time, col="blue")
 }
 
 test.kinrespReplicate <- function(){
 	#mtrace(kinrespReplicate)
-	res10 <- fitKinrespReplicate(rder.e, weights=varPower(fixed=0.5)) 
+	res10 <- fitKinrespReplicate(rder.e, weights=varPower(fixed=0.5))
 	summary(res10)
 	resParms <- coefKinresp(coef(res10))
 	checkTrue( all(c("mumax","r0","x0") %in% names(resParms)) )

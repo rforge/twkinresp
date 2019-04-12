@@ -1,6 +1,6 @@
 #---------- process knowledge: the model relating microbial parameters to observations
 kinrespModel1 <- function(
-	### Respiration for given microbial parameters at given time. 
+	### Respiration for given microbial parameters at given time.
 	x0		##<< initial microbial biomass (numeric scalar)
 	,r0		##<< initial microbial activity (numeric scalar)
 	,mumax	##<< maximum growth rate (numeric scalar)
@@ -12,7 +12,7 @@ kinrespModel1 <- function(
 	### respiration at given time points (numeric vector)
 }
 attr(kinrespModel1,"ex") <- function(){
-	data(respWutzler10)
+	#data(respWutzler10)
 	ds <- subset(respWutzler10, replicate==1 & experiment ==  1 & suite == 'Face' & time < 25)
 	resp0 <- kinrespModel1( x0=118, r0=0.029, mumax=0.21, time=ds$time)
 	plot( resp~time, data=ds)
@@ -21,9 +21,9 @@ attr(kinrespModel1,"ex") <- function(){
 
 modelPar3 <- function(
 	### Translating parameter vector to arguments of Model.
-	parOpt		##<< parameters: named numeric vector (x0,r0,mumax) 
+	parOpt		##<< parameters: named numeric vector (x0,r0,mumax)
 	,fModel		##<< model of the form \code{function(x0,r0,mumax,...)}
-	,parDefault=parOpt	
+	,parDefault=parOpt
 	### if parOpt contains only a subset of (x0,r0,mumax),
 	### e.g. when optimizing only a subset
 	### parDefault can be used to specify the other values

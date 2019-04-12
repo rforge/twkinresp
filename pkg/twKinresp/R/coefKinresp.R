@@ -4,17 +4,18 @@ setMethodS3("kinrespParDist","gnls", function(
 	,...	##<< currently not used
 ){
 	# kinrespParDist.gnls
-	##seealso<< 
+	##alias<< kinrespParDist
+	##seealso<<
 	## \code{\link{coefKinresp.default}}
 	## ,\code{\link{twKinresp}}
-	
-	##details<< 
+
+	##details<<
 	## Both the lognormal and the logitnormal distributions are skewed.
 	## Therefore, the mode, the median, and the expected value differ.
 	## At transformed, i.e. normal scale, they coincide. Simple backtransformation
 	## yield the median at original scale.
-		
-	#mu0 <- coef(model)	
+
+	#mu0 <- coef(model)
 	mu0 <- fixef(model)		#works on both gnls and nlme
 	if( !all(c("mumaxl","r0l","x0l") %in% names(mu0)) )
 		stop("kinrespParDist.gnls: provided model with some normal scale estimates missing.")
@@ -27,7 +28,7 @@ setMethodS3("kinrespParDist","gnls", function(
 	#log-normal
 	i0 <- match(c("x0l","mumaxl"), names(mu0) )
 	mu <- mu0[i0]; sigma <- sigma0[i0]; sigma2 <- sigma02[i0]; cf<-cf0[i0,]
-	i <- match(c("x0","mumax"), rownames(res) )	
+	i <- match(c("x0","mumax"), rownames(res) )
 	res[i,"mean"] <- exp(mu+sigma2/2)
 	res[i,"sd"] <- sqrt( (exp(sigma2)-1)*exp( 2*mu+sigma2 ) )
 	res[i,"mle"] <- exp(mu-sigma2)
@@ -62,23 +63,23 @@ setMethodS3("kinrespParDist","nlme", function(
 	model	##<< the result of the \code{\link{fitKinrespReplicate}} or \code{\link{fitKinrespExperiment}$model}
 	,...	##<< currently not used
 ){
-	##seealso<< 
+	##seealso<<
 	## \code{\link{kinrespParDist.gnls}}
 	## ,\code{\link{coefKinresp.default}}
 	## ,\code{\link{twKinresp}}
 	kinrespParDist.gnls(model,...)
 })
-		 		
-setMethodS3("coefKinresp","default", function( 
+
+setMethodS3("coefKinresp","default", function(
 		### Check the microbial coefficients and translate to original microbial scale.
 		tmp.coef	##<< coefficients of model fit \code{coef(model)} (see details)
 		,...
 	){
 		# coefKinresp.default
-		
-		##seealso<< 
+		##alias<< coefKinresp
+		##seealso<<
 		## \code{\link{twKinresp}}
-		
+
 		##details<< \describe{\item{Functions for acccessing microbial parameters, and their uncertainty bounds.}{
 		## \itemize{
 		## \item{ Mode, Median, Mean and confidence bounds of microbial fits: \code{\link{kinrespParDist.gnls}}}
@@ -88,17 +89,17 @@ setMethodS3("coefKinresp","default", function(
 		## \item{ 95% confidenc interval of microbial parameters of a single fit: \code{\link{confintKinresp}} }
 		## \item{ Microbial parameters from beta-form of model fit: \code{\link{calcKinrespCoef}} }
 		## }
-		##}}	
+		##}}
 
 		##details<< \describe{\item{Functions for translating between normal and original scale.}{
 		## \itemize{
 		## \item{ normalized to original scale: all the methods above. }
 		## \item{ original scale to normalized scale: \code{\link{coefKinrespNormStart}} }
 		## }
-		##}}	
-		
+		##}}
+
 		##details<< \describe{\item{ \code{coef(model)} }{
-		## Models are fitted in various forms differing by used coefficients. 
+		## Models are fitted in various forms differing by used coefficients.
 		## This method regognizes and translates coefficients of the following forms \itemize{
 		## \item{ beta-form at original scale and at normalized scale}
 		## \item{ beta-form excluding beta0 (fixed to 0 see \code{\link{calcKinrespCoef}}) }
@@ -143,26 +144,26 @@ setMethodS3("coefKinresp","kinrespList", function(
 		,...
 	){
 		# coefKinresp.kinrespList
-		##seealso<< 
+		##seealso<<
 		## \code{\link{coefKinresp.default}}
 		## ,\code{\link{twKinresp}}
-		
+
 		#resRepI <- tmp.coef$resRep[[1]]
 		bo <- if( is.null(rds.e)) TRUE else{
 				serUnique <- unique(getSERId(rds.e))
 				names(tmp.coef$resRep) %in% serUnique
-			}		
+			}
 		tmp <- lapply( tmp.coef$resRep[bo], function(resRepI){ as.data.frame(c(list( experiment=resRepI$dataset$experiment[1], replicate=resRepI$dataset$replicate[1]), coefKinresp.default(coef(resRepI$fit)) ))})
 		do.call("rbind",tmp)
 		### named numer matrix (columns experiment, replicate, mumax, x0, and r0) with rows corresponding replicates
 	})
 
-setMethodS3("fixef","kinresp", function( 
+setMethodS3("fixef","kinresp", function(
 		### Make fixed.effects deliver attribute r0 if this is supplied with model.
 		object
 		,...
 	){
-		##seealso<< 
+		##seealso<<
 		## \code{\link{coefKinresp.default}}
 		## ,\code{\link{twKinresp}}
 		attr(object,"class") <- class(object)[-1]
@@ -172,13 +173,13 @@ setMethodS3("fixef","kinresp", function(
 		tmp
 	})
 
-setMethodS3("coef","kinresp", function( 
+setMethodS3("coef","kinresp", function(
 		### Make coef deliver attribute r0 if this is supplied with model.
 		object
 		,...
 	){
 		# coef.kinresp
-		##seealso<< 
+		##seealso<<
 		## \code{\link{coefKinresp.default}}
 		## ,\code{\link{twKinresp}}
 		attr(object,"class") <- class(object)[-1]
@@ -188,12 +189,12 @@ setMethodS3("coef","kinresp", function(
 		tmp
 	})
 
-setMethodS3("confint","kinresp", function( 
+setMethodS3("confint","kinresp", function(
 		### Make confint deliver attribute r0 if this was supplied with object
 		object
 		,...
 	){
-		##seealso<< 
+		##seealso<<
 		## \code{\link{coefKinresp.default}}
 		## ,\code{\link{twKinresp}}
 		attr(object,"class") <- class(object)[-1]
@@ -207,7 +208,7 @@ coefKinrespMatrix <- function(
 	### Check the microbial coefficients and translates to original microbial scale.
 	tmp.coef	##<< multiple rows of microbial coefficients (see \code{\link{coefKinresp.default}})
 ){
-	##seealso<< 
+	##seealso<<
 	## \code{\link{coefKinresp.default}}
 	## ,\code{\link{twKinresp}}
 	if( colnames(tmp.coef)[1] %in% c("beta0l","beta0","beta1") ){
@@ -245,7 +246,7 @@ confintKinresp <- function(
 
 ){
 	# confintKinresp
-	##seealso<< 
+	##seealso<<
 	## \code{\link{coefKinresp.default}}
 	## ,\code{\link{twKinresp}}
 	tmp.i <- match("x0l", rownames(tmp.cf))
@@ -276,10 +277,10 @@ confintKinresp <- function(
 	### Transform microbial coefficients to log scale (does ot care for r0)
 	tmp.coef
 ){
-	##seealso<< 
+	##seealso<<
 	## \code{\link{coefKinresp.default}}
 	## ,\code{\link{twKinresp}}
-	
+
 	##seealso<< \code{\link{coefKinrespNormStart}}
 	tmp.coef <- coefKinresp(tmp.coef) # coefficients at the original scale including x0
 	tmp.names <- names(tmp.coef)
@@ -295,19 +296,19 @@ coefKinrespNormStart <- function(
 	### Transform microbial coefficients to normal scale.
 	tmp.coef	##<< starting parameters of kinetic respiration, supplied to \code{\link{coefKinresp.default}} (maybe beta)
 ){
-	##seealso<< 
+	##seealso<<
 	## \code{\link{coefKinresp.default}}
 	## ,\code{\link{twKinresp}}
-	
+
 	# coefKinrespNormStart
-	##details<< 
+	##details<<
 	## Replaces \itemize{
-	## \item{x0 by x0l = log(x0)} 
-	## \item{mumax by mumaxl=log(mumax)} and 
+	## \item{x0 by x0l = log(x0)}
+	## \item{mumax by mumaxl=log(mumax)} and
 	## \item{r0 by r0l=logit(r0l)}
 	## }
 	## Values at normalized scale are used as starting values for model fits.
-	tmp.coef <- coefKinresp(tmp.coef)	 
+	tmp.coef <- coefKinresp(tmp.coef)
 	tmp.names <- names(tmp.coef)
 	tmp.names[match( "x0", names(tmp.coef))] <- "x0l"
 	tmp.names[match( "r0", names(tmp.coef))] <- "r0l"
@@ -317,7 +318,7 @@ coefKinrespNormStart <- function(
 	tmp.coef["r0l"] <- logit(tmp.coef["r0l"])
 	tmp.coef["mumaxl"] <- log(tmp.coef["mumaxl"])
 	tmp.coef
-	### named vector of coefficients (x0l,r0l,mumaxl) 
+	### named vector of coefficients (x0l,r0l,mumaxl)
 
 }
 

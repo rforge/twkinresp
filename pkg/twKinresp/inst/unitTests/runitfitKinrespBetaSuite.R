@@ -1,5 +1,5 @@
 .setUp <- function(){
-	data(respWutzler10)
+	#data(respWutzler10)
 }
 
 .tearDown <- function(){
@@ -16,11 +16,11 @@ scratch.kinrespGrowthphase <- function(){
 	res2 <- kinrespGrowthphase(rd, weights=varPower(fixed=0.5))
 	res3 <- kinrespGrowthphase(rd, weights=varPower(fixed=0.3))
 	res4 <- kinrespGrowthphase(rd, weights=varPower(fixed=0.8))
-	
+
 	checkTrue( all(c("n","resRep","errors") %in% names(res1) ))
 	checkEquals( length(res1$resRep), nrow(res1$n) )  # regression test (from former run)
 
-	
+
 	rds.e <- getUnlimitedGrowthData(res1)
 	repFits <- coefKinrespBeta(res1)
 	rds.e <- getUnlimitedGrowthData(res2)
@@ -32,7 +32,7 @@ scratch.kinrespGrowthphase <- function(){
 	repFits <- coefKinrespBeta(res4, rds.e)	#0.47
 	#coefList(res2)
 
-	
+
 	rd <- subset(respWutzler10, suite=="Fal" )
 	res2b <- kinrespGrowthphase(rd, weights=varPower(fixed=0.5))
 	rds.e <- getUnlimitedGrowthData(res2b)
@@ -57,7 +57,7 @@ scratch.kinrespGrowthphase <- function(){
 	#mtrace(fitKinrespBetaSuite)
 	tmp <- fitKinrespBetaSuite( rds.e, repFits, weights=varPower(0.3))
 	#does not converge
-	
+
 	# tracing error of fit==NULL
 	# options(error=recover) # find the prolemnatic experiment
 	rd <- subset(respWutzler10, suite=="Pushchino" & experiment==42 )
@@ -70,6 +70,6 @@ scratch.kinrespGrowthphase <- function(){
 	rds.e <- getUnlimitedGrowthData(res3b)
 	#mtrace(coefKinrespBeta.kinrespList)
 	repFits <- coefKinrespBeta(res3b, rds.e)
-	
+
 }
 

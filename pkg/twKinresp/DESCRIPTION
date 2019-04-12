@@ -1,18 +1,16 @@
 Package: twKinresp
-Version: 0.0.4
-Date: 2009-09-01
+Version: 0.0.5
+Date: 2019-04-08
 Title: Fitting kinetic models to microbial respiration data
 Author: Thomas Wutzler <thomas.wutzler@web.de>
 Maintainer: Thomas Wutzler <thomas.wutzler@web.de>
-Depends: R (>= 2.10.0), logitnorm, nlme, lmtest
-Imports: R.methodsS3
+Depends: R (>= 2.10.0), nlme, logitnorm 
+Imports: R.methodsS3, methods, lmtest
 Suggests: RUnit 
 Description:   Estimating microbial parameters: 
     x0: initial microbial biomass, r0: initial microbial activity, and mumax: maximum growth rate of microbial community
     by fitting kinetic models to microbial respiration data of several replicates. 
 License: GPL (>=2)
-URL: http://www.wutzler.net
-ContribURL: http://kinresp.referata.com/wiki/R_kinresp 
-DevelURL: http://kinresp.referata.com/wiki/R_kinresp
+URL: https://r-forge.r-project.org/R/?group_id=889
 LazyLoad: TRUE
-
+LazyData: TRUE

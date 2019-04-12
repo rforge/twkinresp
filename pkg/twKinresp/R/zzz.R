@@ -3,7 +3,5 @@
 .tmp.f <- function(
     ### wrapper to encapsulate code that should not be executed.
 ){
-    
-}        
 
-    
+}

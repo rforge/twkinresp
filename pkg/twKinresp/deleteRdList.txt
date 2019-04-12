@@ -1,0 +1,7 @@
+coefKinresp.Rd
+coefKinrespBeta.Rd
+coefList.Rd
+extractCorrMatrix.Rd
+getUnlimitedGrowthData.Rd
+kinrespParDist.Rd
+plotKinrespDiagnostics.Rd

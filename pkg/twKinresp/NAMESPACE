@@ -1,6 +1,31 @@
 import(nlme)			#fixef
 
+
 exportPattern("^[^\\.]")	#exports all variables that do not start with a period.
+
+import(R.methodsS3)
+importFrom("methods", "is")
+
+    importFrom("graphics", "box", "lines", "mtext", "par", "plot",
+               "points")
+    importFrom("stats", "AIC", "coef", "confint", "fitted", "lm", "pchisq",
+               "qt", "resid", "update")
+
+    # need to depend on so that formula can access it (not evaluated in package)
+    importFrom("logitnorm","invlogit","logit","momentsLogitnorm","modeLogitnorm")
+
+    importFrom("lmtest","bgtest","dwtest")
+
+    S3method(coef,kinresp)
+    S3method(coefKinrespBeta,default)
+    S3method(coefKinrespBeta,kinrespList)
+    S3method(coefList,kinrespList)
+    S3method(confint,kinresp)
+    S3method(confint,nlme)
+    S3method(extractCorrMatrix,gnls)
+    S3method(extractCorrMatrix,nlme)
+    S3method(fixef,gnls)
+    S3method(fixef,kinresp)
 
 S3method(coefKinresp,default)
 S3method(coefKinresp,kinrespList)
