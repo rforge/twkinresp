@@ -2,11 +2,13 @@
 \alias{kinrespGrowthphaseExperiment}
 \title{kinrespGrowthphaseExperiment}
 \description{Confining the unlimited growth phase for several replicates.}
-\usage{kinrespGrowthphaseExperiment(rde, ..., stopOnReplicateError = FALSE)}
+\usage{kinrespGrowthphaseExperiment(rde, ..., stopOnReplicateError = FALSE, 
+    isVerbose = TRUE)}
 \arguments{
   \item{rde}{data.frame with columns suite, experiment, replicate, resp and time}
   \item{\dots}{further arguments to \code{\link{kinrespGrowthphaseReplicate}}}
   \item{stopOnReplicateError}{By default replicates where not fit is obtained are ignored.}
+  \item{isVerbose}{set to FALSE to suppress messages}
 }
 \details{\describe{\item{Functions for Confining the time series to the unlimited growth phase}{
 \itemize{

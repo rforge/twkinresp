@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^_genPackage.R$
 ^deleteRdList.txt$
+^.svnIgnore.txt$

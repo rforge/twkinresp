@@ -1,0 +1,204 @@
+---
+title: Fitting the kinetic respiration model
+#output: html_notebook
+output: 
+  rmarkdown::html_vignette: 
+    keep_md: true
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Fitting the kinetic respiration model}
+  %\usepackage[UTF-8]{inputenc}
+---
+```{r eval=FALSE, include=FALSE}
+# twDev::genVigs()
+rmarkdown::render("kinrespExperiment.Rmd","md_document") 
+```
+
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(out.extra = 'style="display:block; margin: auto"'
+    #, fig.align = "center"
+    #, fig.width = 4.6, fig.height = 3.2
+    , fig.width = 6, fig.height = 3.75 #goldener Schnitt 1.6
+    , dev.args = list(pointsize = 10)
+    , dev = c('png','pdf')
+    )
+knit_hooks$set(spar = function(before, options, envir) {
+    if (before) {
+        par( las = 1 )                   #also y axis labels horizontal
+        par(mar = c(2.0,3.3,0,0) + 0.3 )  #margins
+        par(tck = 0.02 )                          #axe-tick length inside plots             
+        par(mgp = c(1.1,0.2,0) )  #positioning of axis title, axis labels, axis
+     }
+})
+# if (!require(ggplot2) || !require(dplyr) || !require(purrr)) {
+# 	print("To generate this vignette, ggplo2, dplyr, and purrr are required.")
+# 	exit(0)
+# }
+#themeTw <- theme_bw(base_size = 10) + 
+#  theme(axis.title = element_text(size = 9))
+```
+
+## Experimental data
+
+Here we take respiration time series from the dataset in Wutzler 2012 of one
+experiment consisting of incubation of three replicate soil samples.
+
+```{r, message = FALSE}
+library(twKinresp, quietly = TRUE) 
+rde <- subset(respWutzler10, suite == "Face" & experiment == 9 )
+summary(rde)
+```
+
+```{r}
+plot( resp ~ time, data = rde, col = rde$replicate
+      , xlab = "Time (hour)", ylab = "Respiration (gC/gCsoil/hour)")
+```
+
+First, we constrain each time series to the unlimited exponential growth phase.
+The package achieves this byfitting a three parameter exponential equation 
+to successively
+shortened time series. A deviation from the exponential model introduces 
+positive correlations in the model-data residuals.
+Hence, the longest time series is selected
+where there was no positive correlation in the model-data residuals 
+between the mimimum and the last last point.
+
+This works quite well with data that displays a typical exponential growth phase
+but fails if there are deviations from exponential growth present, such as 
+small oscillations in the respiration. Then the records have to be 
+selected manually.
+
+```{r, message = FALSE}
+res4 <- kinrespGrowthphaseExperiment(rde, weights = varPower(fixed = 0.5) )
+rde.e <- getUnlimitedGrowthData(res4)
+plot( resp ~ time, data = rde.e, col = rde.e$replicate
+      , xlab = "Time (hour)", ylab = "Respiration (gC/gCsoil/hour)")
+```
+
+## Mixed linear models
+
+We are interested of the microbial growth parameters for the soil, i.e. 
+across the replicates.
+
+There are several suboptimal approaches to aggregate across replicates.
+
+- Fitting a single growth curve to all the data points
+- Computing the mean respiration for each time and 
+  fitting a model to the single aggregated series
+- Fitting a growth curve to each replicate, and then taking the average across
+  the parameters
+  
+The last approach is wrong because the growth curve of the averaged parameters
+is not an average growth curve.
+
+The two first approaches will provide a good average growth curve but provide
+wrong uncertainty bounds. The first approach neglects the groupings, i.e. 
+dependency between the observations of one replicate 
+and underestimates uncertainty.
+The second approach drops the advantage of having multiple replicates and
+can overestimate uncertainty.
+
+Nonlinear mixed effects models provide an proper statistical approach that 
+uses all of the records and accounts for the groupings ob observations 
+of a replicate.
+This approach is implemented in this package.
+
+## Fitting and inspecting the mixed effects kinetic respiration model
+
+Several versions with random effects in different parameters are fitted,
+and the model with lowest AIC is selected.
+```{r}
+res5Scen <- fitKinrespExperiment(
+  #,showFitErrorMsg = TRUE
+  rde.e, coefKinresp(res4,rde.e), weights = varPower(fixed = 0.5))
+res5Scen$aics
+```
+
+In the example, the variant with the lowest AIC had a random effect
+in initial biomass, $x_0$, and initial proportion of active biomass, $r_0$,
+indicating that those properties differed across replicates.
+
+The variant with a random effect in additionally the maximum growth rate, 
+$\mu_{max}$, could not be fitted to the data (AIC==NA). This indicates either 
+no differences between the replicates or not enough replicates to resolve 
+their differences.
+
+A plot of the fits to the individual replicates shows a good agreement
+between the model and the observations.
+```{r fits, echo=FALSE}
+  rde.e$fitted <- fitted(res5Scen$model)
+  plot( resp ~ time, data = rde.e, col = rde.e$replicate 
+        , xlab = "Time (hour)", ylab = "Respiration (gC/gCsoil/hour)")
+  tmp <- by( rde.e, rde.e$replicate, function(rder){
+    lines(fitted~time,data = rder, col = as.numeric(rder[1,replicate]))})
+```
+
+The selected model object is stored in entry `model` of the result.
+
+```{r}
+kFit = res5Scen$model
+fixef(kFit)
+```
+## Transformed and original scale
+
+The model parameters $x_0$ and $\mu_{max}$ are constrained to be strictly 
+positive and their confidence interval should not include values below zero.
+Therefore, log-transformed versions, $x_{0l}$ and $\mu_{maxl}$ are fitted 
+with the model. This corresponds to assuming that they are log-normally 
+distributed. The values and distribution quantiles at original scale are simply
+found by taking the exponential of their values.
+
+Similarly, model parameter $r_0$ is constrained in interval $(0,1)$. Hence,
+the model fits a logit-transformed version $r_{0l}$, and the values at original
+scale are found by applying the `invlogit` function.
+
+To simplify the process, function `coefKinresp` and `confintKinresp` 
+apply these conversions.
+
+```{r}
+#exp(fixef(kFit)["x0l"])
+#invlogit(fixef(kFit)["r0l"])
+coefKinresp(fixef(kFit))
+```
+
+The uncertainty bounds of the population grwoth parameters at original scale are:
+```{r}
+confintKinresp(confint(kFit))
+```
+
+The help page `?coefKinresp` links to further functions accessing
+the fitted results at transformed and original scale.
+
+Note, that the expected value of a lognormal distribution depends on
+both, the location, $\mu$, and the shape parameter, $\sigma$, and is larger than
+the exponential of $\mu$:
+
+$$
+E(x) = e^{\mu + \sigma^2/2}
+$$
+
+Function `kinrespParDist` computes this expectec value and other statistics.
+We recommend reporting the distribution parameters $(\mu,\sigma)$ along 
+with the expected value and the confidence bounds.
+```{r}
+pars <- kinrespParDist(kFit)
+pars[,c("mean","cf025","cf975","mu","sigma")]
+```
+
+The skewness is vizalized by the following plot of the density distribution 
+of initially active fraction $r_0$.
+
+```{r r0Density, echo=FALSE}
+iPar = "r0"  
+xGrid <- seq( pars[iPar,"cf025"]*0.8, pars[iPar,"cf975"]*1.2, length.out = 80)
+#fx <- dlnorm(xGrid, mean = pars[iPar,"mu"],sd = pars[iPar,"sigma"])
+fx <- dlogitnorm(xGrid, mu = pars[iPar,"mu"],sigma = pars[iPar,"sigma"])
+plot( fx ~ xGrid, type = "l", xlab = iPar, ylab = "density" )
+cols = c("red","green","blue","gray","gray")
+abline(v = pars[iPar,c("mle","median","mean","cf025","cf975")]
+       , col = cols)
+legend("topright", c("density","mode","median","mean","95% bounds")
+       ,col = c("black",cols), lty = "solid")
+```
+

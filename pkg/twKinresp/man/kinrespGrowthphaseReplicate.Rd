@@ -10,7 +10,15 @@
   \item{orderTime}{if rder is already ordered by time, then you can}
   \item{residType}{type of residuals, see argument type of}
 }
+\details{It discardsa all data after the inflection point
 
+If the curve deviates from the exponential model, residuals will
+be correlated.
+
+The longest time series is selected
+for which there is no correlation or a negative correlation
+determined by Breusch-Godfrey Test (bgtest) and Durbin-Watson-Test (dwtest)
+}
 \value{list of class kinresp with components \describe{
 \item{dataset}{ the subset with exponential growth phase }
 \item{dataGrowth}{ the data of the entire growth phase, i.e. until

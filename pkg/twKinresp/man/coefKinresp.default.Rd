@@ -29,9 +29,11 @@
 
 \describe{\item{ \code{coef(model)} }{
 Models are fitted in various forms differing by used coefficients.
-This method regognizes and translates coefficients of the following forms \itemize{
+This method recognizes and translates coefficients of the following forms
+\itemize{
 \item{ beta-form at original scale and at normalized scale}
-\item{ beta-form excluding beta0 (fixed to 0 see \code{\link{calcKinrespCoef}}) }
+\item{ beta-form excluding beta0 (fixed to 0 see
+\code{\link{calcKinrespCoef}}) }
 \item{ microbial form fit at original and transformed scale.}
 \item{ microbial form fit with excluding r0 (assuming r0=1)}
 }

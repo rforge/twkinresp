@@ -4,6 +4,7 @@ kinrespGrowthphaseExperiment <- function(
 	rde		##<< data.frame with columns suite, experiment, replicate, resp and time
 	, ...	##<< further arguments to \code{\link{kinrespGrowthphaseReplicate}}
 	, stopOnReplicateError=FALSE	##<< By default replicates where not fit is obtained are ignored.
+	, isVerbose = TRUE ##<< set to FALSE to suppress messages
 ){
 	##seealso<<
 	## \code{\link{twKinresp}}
@@ -34,7 +35,8 @@ kinrespGrowthphaseExperiment <- function(
 	for( i in seq_along(repIds)){
 		i_exprep = exprepIds[i]
 		i_rep = repIds[i]
-		print(paste("ser(suite_experiment_replicate)=",i_exprep,sep=""))
+		if (isVerbose) message(
+		  paste("ser(suite_experiment_replicate)=",i_exprep,sep=""))
 		rder <- subset(rde, replicate==i_rep)
 		tmp.res <- if( stopOnReplicateError ){
 			tmp <- kinrespGrowthphaseReplicate(rder, ... )

@@ -21,8 +21,9 @@ kinrespGrowthphaseReplicate <- function(
 	# precondition: data is ordered by time
 	if (orderTime)
 		rder <- rder[order(rder$time),]
-
 	#--------------- discard all points after inflection point ----------
+	##details<<
+	## It discardsa all data after the inflection point
 	# got problems with noisy data: include all points up to resp maximum
 	#tmp.slope <- diff(c(0,rder$resp))/diff(c(0,rder$time))
 	#determine the position of the maximum slope (only from 4th to max point
@@ -33,7 +34,11 @@ kinrespGrowthphaseReplicate <- function(
 	# but only discard it analysis of autocorrelation but fit all points in
 	# the beginning else the A parameter will be underestimated or become negative
 	#p.min <- which.min(rder.e$resp)
+	#
 	#---- fit an exponential curve to subset of less and less points ---
+	##details<<
+	## If the curve deviates from the exponential model, residuals will
+	## be correlated.
 	tmp.n <- floor((nrow(rder.e)/2))
 	#tmp.n <- 12
 	tmp.fits <- list()	#store the model fits
@@ -108,27 +113,34 @@ kinrespGrowthphaseReplicate <- function(
 	  , dwtest1 = tmp.dwp1p, dwtest.p = tmp.dwp, dwtestfull.p = tmp.dwpfull
 	)
 
-	tmp.sl <- 0.05	#significane level
+	tmp.sl <- 0.05	#significance level
 	iseq <- (1:nrow(tmp.stat))
 	# determine the i (number of omitted points) for different criteria
 	tmp.is <- c(
-	  r2 = which.max(tmp.stat[,"r2"]), r2w = which.max(tmp.stat[,"r2w"])
+	  r2 = which.max(tmp.stat[,"r2"])
+	  , r2w = which.max(tmp.stat[,"r2w"])
 	  , Q = which.max(tmp.stat[,"Q"])
-			,dwtest1n.p = {
-			  tmp <- which( (tmp.stat[,"dwtest1n.p"][iseq] < tmp.sl)  )
-			  ifelse(length(tmp) > 0,min(tmp),Inf) }	#first negative autocorrelation
-			,apply(tmp.stat[,-(1:5)],2,function(x){
-						i <- {
-						  tmp <- which( (x[iseq] >= tmp.sl) & (c(0,x)[iseq] < tmp.sl))
-						  ifelse(length(tmp) > 0,min(tmp),Inf)}
-					})
-			)
+	  , dwtest1n.p = {
+	    tmp <- which( (tmp.stat[,"dwtest1n.p"][iseq] < tmp.sl)  )
+	    ifelse(length(tmp) > 0,min(tmp),Inf) }	#first negative autocorrelation
+	  , apply(tmp.stat[,-(1:5)],2,function(x){
+	      # get the first switch from significant correlation to nonsignificant
+	      # iSeq is the number of points omitted in increasing order
+	      tmp <- which( (x[iseq] >= tmp.sl) & (c(0,x)[iseq] < tmp.sl))
+	      ifelse(length(tmp) > 0,min(tmp),Inf)
+	  })
+	)
 	# get the corresponding number of included records
 	# suppressWarnings needed for Inf in tmp.is, i.e. when no negative
 	# correlation was found.
 	tmp.ns <- suppressWarnings( structure(
 	  tmp.stat[tmp.is,"n"], names = names(tmp.is) ))
 
+	##details<<
+	## The longest time series is selected
+	## for which there is no correlation or a negative correlation
+	## determined by Breusch-Godfrey Test (bgtest) and Durbin-Watson-Test (dwtest)
+	##
 	i <- min( tmp.is["bgtest1.p"], tmp.is["dwtest1n.p"] )	#cortest
 	if (!is.finite(i) ) {
 		#stop("XXX Warning expPhase: could not determine exponential growth phase: "

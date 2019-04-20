@@ -17,7 +17,7 @@ setMethodS3("kinrespParDist","gnls", function(
 
 	#mu0 <- coef(model)
 	mu0 <- fixef(model)		#works on both gnls and nlme
-	if( !all(c("mumaxl","r0l","x0l") %in% names(mu0)) )
+	if (!all(c("mumaxl","r0l","x0l") %in% names(mu0)) )
 		stop("kinrespParDist.gnls: provided model with some normal scale estimates missing.")
 	sigma0 <- summary(model)$tTable[,"Std.Error"]	#same as sqrt(diag(model$varBeta)) for gls
 	sigma02 <- sigma0^2
@@ -100,37 +100,39 @@ setMethodS3("coefKinresp","default", function(
 
 		##details<< \describe{\item{ \code{coef(model)} }{
 		## Models are fitted in various forms differing by used coefficients.
-		## This method regognizes and translates coefficients of the following forms \itemize{
+		## This method recognizes and translates coefficients of the following forms
+		## \itemize{
 		## \item{ beta-form at original scale and at normalized scale}
-		## \item{ beta-form excluding beta0 (fixed to 0 see \code{\link{calcKinrespCoef}}) }
+		## \item{ beta-form excluding beta0 (fixed to 0 see
+		## \code{\link{calcKinrespCoef}}) }
 		## \item{ microbial form fit at original and transformed scale.}
 		## \item{ microbial form fit with excluding r0 (assuming r0=1)}
 		## }
 		## }}
-		if( names(tmp.coef)[1] %in% c("beta0l","beta0","beta1") ){
+		if (names(tmp.coef)[1] %in% c("beta0l","beta0","beta1")) {
 			tmp.coef <- calcKinrespCoef(tmp.coef)
 		}
-		if( "x0l" %in% names(tmp.coef)){
+		if ("x0l" %in% names(tmp.coef)) {
 			tmp.names <- names(tmp.coef)
 			tmp.names[match( "x0l", names(tmp.coef))] <- "x0"
 			names(tmp.coef) <- tmp.names
 			tmp.coef["x0"] <- exp(tmp.coef["x0"])
 		}
-		if( "r0l" %in% names(tmp.coef)){
+		if ("r0l" %in% names(tmp.coef)){
 			tmp.names <- names(tmp.coef)
 			tmp.names[match( "r0l", names(tmp.coef))] <- "r0"
 			names(tmp.coef) <- tmp.names
 			tmp.coef["r0"] <- invlogit(tmp.coef["r0"])
 		}
-		if( "mumaxl" %in% names(tmp.coef)){
+		if ("mumaxl" %in% names(tmp.coef)){
 			tmp.names <- names(tmp.coef)
 			tmp.names[match( "mumaxl", names(tmp.coef))] <- "mumax"
 			names(tmp.coef) <- tmp.names
 			tmp.coef["mumax"] <- exp(tmp.coef["mumax"])
 		}
-		if( !("r0" %in% names(tmp.coef)) ){
+		if (!("r0" %in% names(tmp.coef)) ){
 			tmp.r0 = structure( attr(tmp.coef,"r0"), names=NULL )
-			if( is.null(tmp.r0) ) tmp.r0 = 1
+			if (is.null(tmp.r0) ) tmp.r0 = 1
 			tmp.coef <- c(tmp.coef["mumax"],r0=tmp.r0,tmp.coef["x0"])
 		}
 		tmp.coef
@@ -149,7 +151,7 @@ setMethodS3("coefKinresp","kinrespList", function(
 		## ,\code{\link{twKinresp}}
 
 		#resRepI <- tmp.coef$resRep[[1]]
-		bo <- if( is.null(rds.e)) TRUE else{
+		bo <- if (is.null(rds.e)) TRUE else{
 				serUnique <- unique(getSERId(rds.e))
 				names(tmp.coef$resRep) %in% serUnique
 			}
@@ -168,7 +170,7 @@ setMethodS3("fixef","kinresp", function(
 		## ,\code{\link{twKinresp}}
 		attr(object,"class") <- class(object)[-1]
 		tmp <- fixef(object)
-		if( !is.null(attr(object,"r0")) )
+		if (!is.null(attr(object,"r0")) )
 			attr(tmp,"r0") <- attr(object,"r0")
 		tmp
 	})
@@ -184,7 +186,7 @@ setMethodS3("coef","kinresp", function(
 		## ,\code{\link{twKinresp}}
 		attr(object,"class") <- class(object)[-1]
 		tmp <- coef(object)
-		if( !is.null(attr(object,"r0")) )
+		if (!is.null(attr(object,"r0")) )
 			attr(tmp,"r0") <- attr(object,"r0")
 		tmp
 	})
@@ -199,7 +201,7 @@ setMethodS3("confint","kinresp", function(
 		## ,\code{\link{twKinresp}}
 		attr(object,"class") <- class(object)[-1]
 		tmp <- confint(object)
-		if( !is.null(attr(object,"r0")) )
+		if (!is.null(attr(object,"r0")) )
 			attr(tmp,"r0") <- attr(object,"r0")
 		tmp
 	})
@@ -211,30 +213,30 @@ coefKinrespMatrix <- function(
 	##seealso<<
 	## \code{\link{coefKinresp.default}}
 	## ,\code{\link{twKinresp}}
-	if( colnames(tmp.coef)[1] %in% c("beta0l","beta0","beta1") ){
+	if (colnames(tmp.coef)[1] %in% c("beta0l","beta0","beta1") ){
 		tmp.coef <- calcKinrespCoef(tmp.coef)
 	}
-	if( "x0l" %in% colnames(tmp.coef)){
+	if ("x0l" %in% colnames(tmp.coef)){
 		tmp.colnames <- colnames(tmp.coef)
 		tmp.colnames[match( "x0l", colnames(tmp.coef))] <- "x0"
 		colnames(tmp.coef) <- tmp.colnames
 		tmp.coef[,"x0"] <- exp(tmp.coef[,"x0"])
 	}
-	if( "r0l" %in% colnames(tmp.coef)){
+	if ("r0l" %in% colnames(tmp.coef)){
 		tmp.colnames <- colnames(tmp.coef)
 		tmp.colnames[match( "r0l", colnames(tmp.coef))] <- "r0"
 		colnames(tmp.coef) <- tmp.colnames
 		tmp.coef[,"r0"] <- invlogit(tmp.coef[,"r0"])
 	}
-	if( "mumaxl" %in% colnames(tmp.coef)){
+	if ("mumaxl" %in% colnames(tmp.coef)){
 		tmp.colnames <- colnames(tmp.coef)
 		tmp.colnames[match( "mumaxl", colnames(tmp.coef))] <- "mumax"
 		colnames(tmp.coef) <- tmp.colnames
 		tmp.coef[,"mumax"] <- exp(tmp.coef[,"mumax"])
 	}
-	if( !("r0" %in% colnames(tmp.coef)) ){
+	if (!("r0" %in% colnames(tmp.coef)) ){
 		tmp.r0 = structure( attr(tmp.coef,"r0"), colnames=NULL )
-		if( is.null(tmp.r0) ) tmp.r0 = 1
+		if (is.null(tmp.r0) ) tmp.r0 = 1
 		tmp.coef <- c(tmp.coef["mumax"],r0=tmp.r0,tmp.coef["x0"])
 	}
 	tmp.coef
@@ -250,23 +252,23 @@ confintKinresp <- function(
 	## \code{\link{coefKinresp.default}}
 	## ,\code{\link{twKinresp}}
 	tmp.i <- match("x0l", rownames(tmp.cf))
-	if( !is.na(tmp.i)){
+	if (!is.na(tmp.i)){
 		tmp.cf[tmp.i,] <- exp(tmp.cf[tmp.i,])
 		rownames(tmp.cf)[tmp.i] <- "x0"
 	}
 	tmp.i <- match("r0l", rownames(tmp.cf))
-	if( !is.na(tmp.i)){
+	if (!is.na(tmp.i)){
 		tmp.cf[tmp.i,] <- invlogit(tmp.cf[tmp.i,])
 		rownames(tmp.cf)[tmp.i] <- "r0"
 	}
 	tmp.i <- match("mumaxl", rownames(tmp.cf))
-	if( !is.na(tmp.i)){
+	if (!is.na(tmp.i)){
 		tmp.cf[tmp.i,] <- exp(tmp.cf[tmp.i,])
 		rownames(tmp.cf)[tmp.i] <- "mumax"
 	}
-	if( rownames(tmp.cf)[2] != "r0" ){
+	if (rownames(tmp.cf)[2] != "r0" ){
 		tmp.r0 = structure( attr(tmp.cf,"r0"), names=NULL )
-		if( is.null(tmp.r0) ) tmp.r0 = 1
+		if (is.null(tmp.r0) ) tmp.r0 = 1
 		tmp.cf <- rbind( tmp.cf["mumax",],c( tmp.r0,tmp.r0), tmp.cf["x0",] )
 		rownames(tmp.cf) <- c("mumax","r0","x0")
 	}
